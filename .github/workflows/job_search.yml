@@ -1,0 +1,29 @@
+name: Job Search — OutSystems & AI
+
+on:
+  schedule:
+    # Corre todos os dias às 08:00 UTC (09:00 Lisboa)
+    - cron: "0 8 * * *"
+  workflow_dispatch: # permite correr manualmente
+
+jobs:
+  search:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run job search
+        run: python3 search_jobs.py | tee job_results.txt
+
+      - name: Upload results as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: job-results-${{ github.run_id }}
+          path: job_results.txt
+          retention-days: 7
